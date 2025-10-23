@@ -8,9 +8,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.heartzapp.ui.screens.PantallaInicio
 import com.example.heartzapp.ui.screens.PantallaProductos
 import com.example.heartzapp.ui.screens.perfil.PantallaPerfil
-//import com.example.heartzapp.ui.screens.perfil.PantallaLogin
-//import com.example.heartzapp.ui.screens.perfil.PantallaRegistro
-
 
 @Composable
 fun NavegacionApp() {
@@ -20,12 +17,8 @@ fun NavegacionApp() {
         navController = navController,
         startDestination = "inicio"
     ) {
-        composable("inicio") { PantallaInicio() }
-        composable("productos") { PantallaProductos() }
-        composable("perfil") { PantallaPerfil() }
-
-        //composable("login") { PantallaLogin() }
-        //composable("registro") { PantallaRegistro() }
+        composable("inicio") { PantallaInicio(navController) }
+        composable("productos") { PantallaProductos(navController) }
+        composable("perfil") { PantallaPerfil(navController) }
     }
 }
-

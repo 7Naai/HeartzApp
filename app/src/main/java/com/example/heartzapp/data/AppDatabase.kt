@@ -13,7 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [Vinilo::class, Usuario::class], version = 1)
+@Database(entities = [Vinilo::class, Usuario::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun viniloDao(): ViniloDao
     abstract fun usuarioDao(): UsuarioDao
@@ -27,8 +27,9 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "heartz_database"
+                    "heartz_db"
                 )
+                    .fallbackToDestructiveMigration()
                     .addCallback(DatabaseCallback())
                     .build()
                 INSTANCE = instance
@@ -53,7 +54,6 @@ private suspend fun seedDatabase(database: AppDatabase) {
     val viniloDao = database.viniloDao()
     val usuarioDao = database.usuarioDao()
 
-    // Poblar Vinilos
     viniloDao.insert(
         Vinilo(
             idVin = 1,
@@ -70,7 +70,7 @@ private suspend fun seedDatabase(database: AppDatabase) {
             edicion = "Original",
             duracion = "61:36",
             descripcion = "El quinto álbum de Deftones mezcla metal alternativo con atmósferas etéreas, consolidando su sonido más experimental.",
-            img = "deftones_saturday_night_wrist_cover.jpg"
+            img = "saturday_night_wrist_cover"
         )
     )
     viniloDao.insert(
@@ -84,12 +84,12 @@ private suspend fun seedDatabase(database: AppDatabase) {
             formato = "2LP",
             colorVinilo = "Beige",
             stock = 8,
-            sello = "Boys Don’t Cry",
+            sello = "Boys Don't Cry",
             pais = "EE.UU.",
             edicion = "Edición Limitada",
             duracion = "60:08",
             descripcion = "Obra maestra introspectiva de Frank Ocean, fusionando R&B, soul y electrónica con letras profundamente personales.",
-            img = "frank_ocean_blonde_cover.jpg"
+            img = "blonde_cover"
         )
     )
     viniloDao.insert(
@@ -108,7 +108,7 @@ private suspend fun seedDatabase(database: AppDatabase) {
             edicion = "Original",
             duracion = "48:37",
             descripcion = "El segundo álbum de Radiohead marca su transición hacia un sonido más emocional y alternativo con himnos inolvidables.",
-            img = "radiohead_the_bends_cover.jpg"
+            img = "the_bends_cover"
         )
     )
     viniloDao.insert(
@@ -127,7 +127,7 @@ private suspend fun seedDatabase(database: AppDatabase) {
             edicion = "Original",
             duracion = "42:12",
             descripcion = "Electropop brillante y nostálgico de Magdalena Bay con un sonido synthpop fresco y pegadizo.",
-            img = "magdalena_bay_imaginal_disk_cover.jpg"
+            img = "imaginal_disk_cover"
         )
     )
     viniloDao.insert(
@@ -146,7 +146,7 @@ private suspend fun seedDatabase(database: AppDatabase) {
             edicion = "Original",
             duracion = "42:19",
             descripcion = "El icónico álbum de Michael Jackson que revolucionó el pop y estableció récords de ventas en todo el mundo.",
-            img = "michael_jackson_thriller_cover.jpg"
+            img = "thriller_cover"
         )
     )
     viniloDao.insert(
@@ -165,7 +165,7 @@ private suspend fun seedDatabase(database: AppDatabase) {
             edicion = "Original",
             duracion = "43:00",
             descripcion = "Álbum conceptual legendario de Pink Floyd, explorando temas de locura, tiempo y avaricia con un sonido atmosférico único.",
-            img = "pink_floyd_the_dark_side_of_the_moon_cover.jpg"
+            img = "the_dark_side_of_the_moon_cover"
         )
     )
     viniloDao.insert(
@@ -184,7 +184,7 @@ private suspend fun seedDatabase(database: AppDatabase) {
             edicion = "Original",
             duracion = "52:35",
             descripcion = "Álbum de Playboi Carti caracterizado por su estilo trap experimental y energías crudas en cada pista.",
-            img = "playboi_carti_whole_lotta_red_cover.jpg"
+            img = "whole_lotta_red_cover"
         )
     )
     viniloDao.insert(
@@ -203,7 +203,7 @@ private suspend fun seedDatabase(database: AppDatabase) {
             edicion = "Original",
             duracion = "49:21",
             descripcion = "Álbum emblemático de Los Tres, mezcla rock, jazz y folklore chileno con letras profundas y cargadas de sentimiento.",
-            img = "los_tres_la_espada_y_la_pared_cover.jpg"
+            img = "la_espada_y_la_pared_cover"
         )
     )
     viniloDao.insert(
@@ -222,11 +222,10 @@ private suspend fun seedDatabase(database: AppDatabase) {
             edicion = "Original",
             duracion = "45:50",
             descripcion = "Jazz fusion instrumental de alto nivel con virtuosismo y melodías cautivadoras, clásico del jazz japonés.",
-            img = "casiopea_casiopea_cover.jpg"
+            img = "casiopea_cover"
         )
     )
 
-    // Poblar Usuarios
     usuarioDao.insert(
         Usuario(
             rut = "12345678-5",

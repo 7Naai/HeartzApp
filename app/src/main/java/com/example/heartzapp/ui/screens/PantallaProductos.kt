@@ -1,146 +1,119 @@
-package com.example.heartzapp.ui.screen
+package com.example.heartzapp.ui.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.heartzapp.data.model.Vinilo
+import androidx.navigation.NavHostController
+import com.example.heartzapp.ui.components.BottomBar
+import com.example.heartzapp.ui.components.TarjetaVinilo
 import com.example.heartzapp.viewmodel.ViniloViewModel
 
 @Composable
-fun PantallaProductos(
-    viniloViewModel: ViniloViewModel = viewModel(),
-    onVerDetalle: (Vinilo) -> Unit,
-    onAgregarCarrito: (Vinilo) -> Unit
-) {
-    val vinilos by viniloViewModel.vinilos.collectAsState()
-    val generos by viniloViewModel.generos.collectAsState()
-    val artistas by viniloViewModel.artistas.collectAsState()
+fun PantallaProductos(navController: NavHostController) {
+    val context = LocalContext.current
+    val viewModel: ViniloViewModel = viewModel(
+        factory = androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(
+            context.applicationContext as android.app.Application
+        )
+    )
 
-    var filtroGenero by remember { mutableStateOf("todos") }
-    var filtroArtista by remember { mutableStateOf("todos") }
-    var ordenPrecio by remember { mutableStateOf("ninguno") }
+    val vinilos by viewModel.vinilos.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
-    val vinilosFiltrados = remember(vinilos, filtroGenero, filtroArtista, ordenPrecio) {
-        vinilos
-            .filter { filtroGenero == "todos" || it.genero == filtroGenero }
-            .filter { filtroArtista == "todos" || it.artista == filtroArtista }
-            .let { list ->
-                when (ordenPrecio) {
-                    "asc" -> list.sortedBy { it.precio }
-                    "desc" -> list.sortedByDescending { it.precio }
-                    else -> list
-                }
-            }
-    }
-
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Nuestros Vinilos", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            DropdownMenuFilter(
-                label = "Género",
-                options = listOf("todos") + generos,
-                selectedOption = filtroGenero,
-                onOptionSelected = { filtroGenero = it }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF7E57C2),
+                        Color(0xFFF3E5F5)
+                    )
+                )
             )
-            DropdownMenuFilter(
-                label = "Artista",
-                options = listOf("todos") + artistas,
-                selectedOption = filtroArtista,
-                onOptionSelected = { filtroArtista = it }
-            )
-            DropdownMenuFilter(
-                label = "Precio",
-                options = listOf("ninguno", "asc", "desc"),
-                selectedOption = ordenPrecio,
-                onOptionSelected = { ordenPrecio = it }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 56.dp)
         ) {
-            items(vinilosFiltrados) { vinilo ->
-                Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(4.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(8.dp)
-                    ) {
-                        if (vinilo.img != 0) {
-                            Image(
-                                painter = painterResource(id = vinilo.img),
-                                contentDescription = vinilo.nombre,
-                                modifier = Modifier
-                                    .size(100.dp)
-                                    .clickable { onVerDetalle(vinilo) },
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(vinilo.nombre, style = MaterialTheme.typography.titleMedium)
-                            Text(vinilo.artista, style = MaterialTheme.typography.bodyMedium)
-                            Text(vinilo.genero, style = MaterialTheme.typography.bodySmall)
-                            Text("Formato: ${vinilo.formato}", style = MaterialTheme.typography.bodySmall)
-                            Text("Precio: $${vinilo.precio}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
-                        }
-
-                        Column {
-                            Button(onClick = { onVerDetalle(vinilo) }) {
-                                Text("Ver")
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(onClick = { onAgregarCarrito(vinilo) }) {
-                                Text("Añadir")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun DropdownMenuFilter(
-    label: String,
-    options: List<String>,
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box {
-        Button(onClick = { expanded = true }) {
-            Text("$label: $selectedOption")
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option) },
-                    onClick = {
-                        onOptionSelected(option)
-                        expanded = false
-                    }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF2A004E))
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Catálogo de Vinilos",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
             }
+
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            } else if (vinilos.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No hay vinilos disponibles",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(vinilos) { vinilo ->
+                        TarjetaVinilo(
+                            vinilo = vinilo,
+                            onVerDetalle = { viniloSeleccionado ->
+                                println("Ver detalle de: ${viniloSeleccionado.nombre}")
+                            },
+                            onAgregarCarrito = { viniloSeleccionado ->
+                                println("Añadir al carrito: ${viniloSeleccionado.nombre}")
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        Box(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            BottomBar(navController)
         }
     }
 }

@@ -15,10 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
-import com.example.heartzapp.ui.components.BottomBar
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.example.heartzapp.ui.components.BottomBar
 import com.example.heartzapp.ui.components.CarruselImagenes
 
 data class ProductoPlaceholder(
@@ -27,9 +26,7 @@ data class ProductoPlaceholder(
 )
 
 @Composable
-fun PantallaInicio() {
-    val navController = rememberNavController()
-
+fun PantallaInicio(navController: NavHostController) {  // ← Añadido parámetro
     val productosDestacados = listOf(
         ProductoPlaceholder("Álbum destacado 1", "$19.990"),
         ProductoPlaceholder("Álbum destacado 2", "$21.490"),
@@ -42,7 +39,6 @@ fun PantallaInicio() {
         ProductoPlaceholder("Próximo lanzamiento 2", "Próximamente")
     )
 
-    //
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -177,12 +173,12 @@ fun PantallaInicio() {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Boton de catalogo porsia!
+            // Boton de catalogo
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Button(onClick = {  }) {
+                Button(onClick = { navController.navigate("productos") }) {  // ← Ahora navega correctamente
                     Text(text = "Consultar catálogo completo")
                 }
             }
@@ -195,10 +191,4 @@ fun PantallaInicio() {
             BottomBar(navController)
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PantallaInicioPreview() {
-    PantallaInicio()
 }
