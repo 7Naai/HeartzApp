@@ -31,10 +31,12 @@ fun CarruselImagenes() {
     val pagerState = rememberPagerState(pageCount = { imagenes.size })
 
     // Este es el autoslide
-    LaunchedEffect(pagerState.currentPage) {
-        delay(5000)
-        val nextPage = (pagerState.currentPage + 1) % imagenes.size
-        pagerState.animateScrollToPage(nextPage)
+    LaunchedEffect(pagerState) {
+        while (true) {
+            delay(5000) // espera 5 segundos antes de cambiar
+            val nextPage = (pagerState.currentPage + 1) % imagenes.size
+            pagerState.animateScrollToPage(nextPage)
+        }
     }
 
     Column(
