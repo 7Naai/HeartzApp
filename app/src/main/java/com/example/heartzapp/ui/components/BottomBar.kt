@@ -6,17 +6,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.NavHostController
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.example.heartzapp.R
 
 @Composable
 fun BottomBar(navController: NavHostController) {
     val items = listOf(
-        BottomNavItem("Inicio", "inicio"),
-        BottomNavItem("Productos", "productos"),
-        BottomNavItem("Perfil", "perfil")
+        BottomNavItem("Inicio", "inicio", R.drawable.home_icon_opsz24),
+        BottomNavItem("Productos", "productos", R.drawable.local_mall_icon_opsz24),
+        BottomNavItem("Perfil", "perfil", R.drawable.account_box_icon_opsz24)
     )
 
     NavigationBar(
-        containerColor = Color.Black, // COLOR DEL FONDO DE LA BARRA!!
+        containerColor = Color.Black,
         contentColor = Color.White
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -24,12 +31,21 @@ fun BottomBar(navController: NavHostController) {
 
         items.forEach { item ->
             NavigationBarItem(
-                icon = {}, // aqui deberian ir los iconos lol
+                icon = {
+                    Image(
+                        painter = painterResource(id = item.icon),
+                        contentDescription = item.title,
+                        modifier = Modifier.size(32.dp), // <-- tamaño más grande
+                        colorFilter = ColorFilter.tint(
+                            if (currentRoute == item.route) Color(0xFFB388FF) else Color.White
+                        )
+                    )
+                },
                 label = {
                     Text(
                         text = item.title,
                         color = if (currentRoute == item.route)
-                            Color(0xFFB388FF) // morado claro si está seleccionado
+                            Color(0xFFB388FF)
                         else
                             Color.White
                     )
@@ -46,5 +62,6 @@ fun BottomBar(navController: NavHostController) {
 
 data class BottomNavItem(
     val title: String,
-    val route: String
+    val route: String,
+    val icon: Int
 )
