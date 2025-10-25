@@ -231,8 +231,8 @@ private suspend fun seedDatabase(database: AppDatabase) {
             rut = "12345678-5",
             nombre = "Juan Pérez",
             correo = "juan.perez@mail.com",
-            rol = "Cliente",
-            fechaNacimiento = "1990-05-12"
+            contrasena = "123456",
+            rol = "Cliente"
         )
     )
     usuarioDao.insert(
@@ -240,8 +240,8 @@ private suspend fun seedDatabase(database: AppDatabase) {
             rut = "87654321-K",
             nombre = "María González",
             correo = "maria.gonzalez@mail.com",
-            rol = "Empleado",
-            fechaNacimiento = "1985-11-23"
+            contrasena = "123456",
+            rol = "Empleado"
         )
     )
     usuarioDao.insert(
@@ -249,8 +249,8 @@ private suspend fun seedDatabase(database: AppDatabase) {
             rut = "11223344-3",
             nombre = "Pedro Ramírez",
             correo = "pedro.ramirez@mail.com",
-            rol = "Cliente",
-            fechaNacimiento = "1992-07-01"
+            contrasena = "123456",
+            rol = "Cliente"
         )
     )
     usuarioDao.insert(
@@ -258,8 +258,8 @@ private suspend fun seedDatabase(database: AppDatabase) {
             rut = "44332211-9",
             nombre = "Ana Torres",
             correo = "ana.torres@mail.com",
-            rol = "Empleado",
-            fechaNacimiento = "1988-02-17"
+            contrasena = "123456",
+            rol = "Empleado"
         )
     )
     usuarioDao.insert(
@@ -267,8 +267,18 @@ private suspend fun seedDatabase(database: AppDatabase) {
             rut = "55667788-0",
             nombre = "Luis Fernández",
             correo = "luis.fernandez@mail.com",
-            rol = "Cliente",
-            fechaNacimiento = "1995-09-30"
+            contrasena = "123456",
+            rol = "Cliente"
         )
     )
+    usuarioDao.insert(
+        Usuario(
+            rut = "12345678-9",
+            nombre = "Martin Sepulveda",
+            correo = "admin@heartz.cl",
+            contrasena = "123456",
+            rol = "Administrador"
+        )
+    )
+
 }
