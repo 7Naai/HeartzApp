@@ -18,10 +18,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.heartzapp.R
 
 @Composable
-fun PantallaLogin(
+fun PantallaLogin(navController: NavHostController,
     onLoginSuccess: (String) -> Unit = {},
     onForgotPassword: () -> Unit = {},
     onRegister: () -> Unit = {}
@@ -161,5 +163,5 @@ fun PantallaLogin(
 @Preview(showBackground = true)
 @Composable
 fun PantallaLoginPreview() {
-    PantallaLogin()
+    PantallaLogin(navController = rememberNavController())
 }

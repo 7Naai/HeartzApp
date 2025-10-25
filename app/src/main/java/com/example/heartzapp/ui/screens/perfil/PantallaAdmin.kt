@@ -11,12 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PantallaAdmin(
+fun PantallaAdmin(navController: NavHostController,
     onLogout: () -> Unit = {} // callback opcional para salir
 ) {
     val scope = rememberCoroutineScope()
@@ -148,5 +150,5 @@ fun StatCard(title: String, value: String) {
 @Preview(showBackground = true)
 @Composable
 fun PantallaAdminPreview() {
-    PantallaAdmin()
+    PantallaAdmin(navController = rememberNavController())
 }

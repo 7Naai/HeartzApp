@@ -18,12 +18,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.heartzapp.R
 
 @Composable
-fun PantallaRegistroCompleto(
-    onRegisterSuccess: (usuario: Usuario) -> Unit = {},
-    onBackToLogin: () -> Unit = {}
+fun PantallaRegistroCompleto(navController: NavHostController,
+                             onRegisterSuccess: (usuario: Usuario) -> Unit = {},
+                             onBackToLogin: () -> Unit = {}
 ) {
     // Campos del formulario
     var rut by remember { mutableStateOf("") }
@@ -237,5 +239,5 @@ data class Usuario(
 @Preview(showBackground = true)
 @Composable
 fun PantallaRegistroCompletoPreview() {
-    PantallaRegistroCompleto()
+    PantallaRegistroCompleto(navController = rememberNavController())
 }
