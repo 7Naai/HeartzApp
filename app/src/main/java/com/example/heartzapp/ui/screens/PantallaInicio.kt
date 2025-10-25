@@ -5,39 +5,40 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.heartzapp.ui.components.BottomBar
 import com.example.heartzapp.ui.components.CarruselImagenes
-
-data class ProductoPlaceholder(
-    val nombre: String,
-    val precio: String
-)
+import com.example.heartzapp.ui.components.TarjetaVinilo
+import com.example.heartzapp.viewmodel.ViniloViewModel
 
 @Composable
-fun PantallaInicio(navController: NavHostController) {  // ← Añadido parámetro
-    val productosDestacados = listOf(
-        ProductoPlaceholder("Álbum destacado 1", "$19.990"),
-        ProductoPlaceholder("Álbum destacado 2", "$21.490"),
-        ProductoPlaceholder("Álbum destacado 3", "$24.990"),
-        ProductoPlaceholder("Álbum destacado 4", "$22.990"),
+fun PantallaInicio(navController: NavHostController) {
+    val context = LocalContext.current
+    val viewModel: ViniloViewModel = viewModel(
+        factory = androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.getInstance(
+            context.applicationContext as android.app.Application
+        )
     )
 
-    val proximosLanzamientos = listOf(
-        ProductoPlaceholder("Próximo lanzamiento 1", "Próximamente"),
-        ProductoPlaceholder("Próximo lanzamiento 2", "Próximamente")
-    )
+    val vinilos by viewModel.vinilos.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    // Tomamos solo los 4 primeros vinilos para los destacados
+    val productosDestacados = vinilos.take(4)
 
     Box(
         modifier = Modifier
@@ -45,148 +46,83 @@ fun PantallaInicio(navController: NavHostController) {  // ← Añadido parámet
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
+                        Color.Black,
                         Color(0xFF7E57C2),
                         Color(0xFFF3E5F5)
                     )
                 )
             )
-            .padding(bottom = 56.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp)
+                // Asegura espacio para la barra de estado (hora/batería)
+                .padding(WindowInsets.statusBars.asPaddingValues())
+                // Evita que el contenido se esconda bajo la BottomBar
+                .padding(bottom = 56.dp)
         ) {
-            // Carrusel
+            // Carrusel superior
             CarruselImagenes()
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Titulo "productos destacados"
             Text(
                 text = "Productos destacados",
                 style = MaterialTheme.typography.titleLarge.copy(
-                    color = Color.White
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
                 ),
-                modifier = Modifier.padding(start = 4.dp)
+                modifier = Modifier.padding(start = 8.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Seccion de productos destacados
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(productosDestacados) { producto ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF2A004E))
-                            .padding(12.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF4A148C)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("🎵", fontSize = MaterialTheme.typography.headlineMedium.fontSize)
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = producto.nombre,
-                            color = Color.White,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Text(
-                            text = producto.precio,
-                            color = Color(0xFFB388FF),
-                            style = MaterialTheme.typography.bodySmall
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            } else if (productosDestacados.isEmpty()) {
+                Text(
+                    text = "No hay productos destacados disponibles",
+                    color = Color.White,
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(productosDestacados) { vinilo ->
+                        TarjetaVinilo(
+                            vinilo = vinilo,
+                            onVerDetalle = { viniloSeleccionado ->
+                                println("Ver detalle de: ${viniloSeleccionado.nombre}")
+                            },
+                            onAgregarCarrito = { viniloSeleccionado ->
+                                println("Añadir al carrito: ${viniloSeleccionado.nombre}")
+                            }
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Seccion de Próximas novedades
-            Text(
-                text = "Próximas novedades",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    color = Color.White
-                ),
-                modifier = Modifier.padding(start = 4.dp)
-            )
-
             Spacer(modifier = Modifier.height(8.dp))
-
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(proximosLanzamientos) { producto ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF2A004E))
-                            .padding(12.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(80.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF6A1B9A)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("💿", fontSize = MaterialTheme.typography.titleLarge.fontSize)
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = producto.nombre,
-                            color = Color.White,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Text(
-                            text = producto.precio,
-                            color = Color(0xFF9C27B0),
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Boton de catalogo
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(onClick = { navController.navigate("productos") }) {  // ← Ahora navega correctamente
-                    Text(text = "Consultar catálogo completo")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
+
+        // BottomBar siempre fija abajo
         Box(
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
         ) {
             BottomBar(navController)
         }

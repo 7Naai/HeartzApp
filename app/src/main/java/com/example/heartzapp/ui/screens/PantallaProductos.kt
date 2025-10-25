@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import com.example.heartzapp.ui.components.BottomBar
 import com.example.heartzapp.ui.components.TarjetaVinilo
 import com.example.heartzapp.viewmodel.ViniloViewModel
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun PantallaProductos(navController: NavHostController) {
@@ -42,6 +43,7 @@ fun PantallaProductos(navController: NavHostController) {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
+                        Color.Black,
                         Color(0xFF7E57C2),
                         Color(0xFFF3E5F5)
                     )
@@ -51,33 +53,45 @@ fun PantallaProductos(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                // Deja espacio para la barra de estado (hora, batería)
+                .padding(WindowInsets.statusBars.asPaddingValues())
+                // Evita que se oculte el contenido tras la BottomBar
                 .padding(bottom = 56.dp)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF2A004E))
-                    .padding(16.dp)
+                    .padding(vertical = 16.dp)
             ) {
                 Text(
                     text = "Catálogo de Vinilos",
                     style = MaterialTheme.typography.headlineMedium.copy(
                         color = Color.White,
                         fontWeight = FontWeight.Bold
-                    )
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    textAlign = TextAlign.Center
                 )
             }
 
+
+
             if (isLoading) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = Color.White)
                 }
             } else if (vinilos.isEmpty()) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -90,7 +104,8 @@ fun PantallaProductos(navController: NavHostController) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .weight(1f)
                         .padding(horizontal = 8.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -110,6 +125,7 @@ fun PantallaProductos(navController: NavHostController) {
             }
         }
 
+        // BottomBar fija al fondo
         Box(
             modifier = Modifier.align(Alignment.BottomCenter)
         ) {
