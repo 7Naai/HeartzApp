@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.heartzapp.ui.screens.PantallaAdmin
 import com.example.heartzapp.ui.screens.PantallaInicio
 import com.example.heartzapp.ui.screens.PantallaLogin
 import com.example.heartzapp.ui.screens.PantallaProductos
@@ -24,5 +25,7 @@ fun NavegacionApp() {
         composable("perfil") { PantallaPerfil(navController) }
         composable("login") { PantallaLogin(navController) }
         composable("register") { PantallaRegistroCompleto(navController) }
+        composable("admin") { PantallaAdmin(navController) }
+
     }
 }

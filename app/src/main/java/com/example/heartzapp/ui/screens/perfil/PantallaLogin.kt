@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.heartzapp.R
-
+import com.example.heartzapp.ui.utils.LoginValidator
 @Composable
 fun PantallaLogin(navController: NavHostController,
     onLoginSuccess: (String) -> Unit = {},
@@ -136,8 +136,15 @@ fun PantallaLogin(navController: NavHostController,
             // Botón Ingresar
             Button(
                 onClick = {
-                    if (correo.contains("admin")) onLoginSuccess("admin")
-                    else onLoginSuccess("cliente")
+                    val rol = LoginValidator.validarUsuario(correo, contrasena)
+                    when (rol) {
+                        "admin" -> navController.navigate("admin")
+                        "cliente" -> navController.navigate("inicio")
+                        else -> {
+                            // Aquí puedes mostrar un mensaje de error si quieres
+                            println("Credenciales inválidas")
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
