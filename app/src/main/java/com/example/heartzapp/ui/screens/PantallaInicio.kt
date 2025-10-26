@@ -67,7 +67,7 @@ fun PantallaInicio(navController: NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Productos destacados",
+                text = "Productos destacadoss",
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.White,
                     fontWeight = FontWeight.Bold
